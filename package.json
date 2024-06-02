@@ -1,0 +1,29 @@
+{
+  "name": "magical_turntable",
+  "private": true,
+  "version": "1.0.0",
+  "description": "『初音ミク「マジカルミライ 2023」プログラミング・コンテスト』応募作品「マジカルターンテーブル」",
+  "scripts": {
+    "dev": "parcel src/index.html --dist-dir dev",
+    "build": "parcel build src/index.html --public-url ./ --dist-dir docs --no-source-maps",
+    "clean": "del-cli .parcel-cache dev docs",
+    "prebuild": "del-cli docs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/habuka/MagicalTurntable.git"
+  },
+  "keywords": [
+    "textalive"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/habuka/MagicalTurntable.git#readme",
+  "dependencies": {
+    "p5": "^1.1.9",
+    "textalive-app-api": "^0.3.0"
+  },
+  "devDependencies": {
+    "del-cli": "^4.0.1",
+    "parcel": "^2.0.0-beta.3.1"
+  }
+}
