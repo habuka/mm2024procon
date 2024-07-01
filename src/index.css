@@ -33,7 +33,6 @@
   position: absolute;
   width: 105px;
   height: 105px;
-  border-radius: 50%;
   display: none;
   background: transparent;
   border: none;
@@ -44,7 +43,6 @@
   position: absolute;
   width: 85px;
   height: 85px;
-  border-radius: 50%;
   display: none;
   background: transparent;
   border: none;
@@ -55,7 +53,16 @@
   position: absolute;
   width: 85px;
   height: 85px;
-  border-radius: 50%;
+  display: none;
+  background: transparent;
+  border: none;
+  z-index: 201;
+}
+
+#note {
+  position: absolute;
+  width: 85px;
+  height: 85px;
   display: none;
   background: transparent;
   border: none;
