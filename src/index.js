@@ -19,14 +19,21 @@ const default_height = 1440;
 const char_size_default = 60;
 
 /**
+ * 1行の最大文字数
+ * この文字数を超える場合は自動的に改行される
+ */
+const max_text_in_line = 23;
+
+/**
  * ミクさんの1ドット辺りの長さ(px)
  */
 const miku_dot_size = 15;
 
 /**
- * 文字表示領域のy座標
+ * 文字表示領域の基準位置(一番左下)[left, top[px]]
+ * キャンバス倍率1の時の値
  */
-const char_height_default = 500;
+const text_base_pos = [30, 590];
 
 /**
  * ミクの基準位置(中央揃え)[left, top[px]]
@@ -53,13 +60,21 @@ const effect_note_pos_table = [
   [[350, 400], [420, 280]],
   [[800, 150], [860, 160]],
   [[1200, 550], [1150, 500]],
-]
+];
+
+/**
+ * zzzエフェクトテーブル[left, top[px]]
+ * キャンバス倍率1の時の値
+ */
+const zzz_pos_table = [
+  [800, 210], [810, 180],
+];
 
 /**
  * ▼アイコンの位置
  * キャンバス倍率1の時の値
  */
-const icon_scrill_pos = [1420, 1277];
+const icon_scrill_pos = [1420, 1240];
 
 /**
  * START/STOPボタンの位置[left, top[px]]
@@ -247,8 +262,7 @@ let song_id = -1;
 let general_magnification = 0;
 
 /**
- * 回転角度リストの要素数
- * 最初に0、最後に楽曲の終端を格納するので要素数は歌詞の文字数 + 2
+ * 歌詞リストの要素数
  */
 let char_list_size = 0;
 
@@ -326,10 +340,9 @@ let line_num = 0;
 let current_line_num = 0;
 
 /**
- * 1行の最大文字数
- * この文字数を超える場合は自動的に改行される
+ * 文字の間隔
  */
-let max_text_in_line = 25;
+let text_margin;
 
 /* プレイヤーの初期化 / Initialize TextAlive Player */
 const player = new Player({
@@ -341,6 +354,8 @@ const player = new Player({
 player.addListener({
   onAppReady: () => {
     console.log("onAppReady");
+    /* 文字数を決定 */
+    text_margin = (default_width - text_base_pos[0] - 200) / max_text_in_line;
     SetSceneSongSelect();
   },
 
@@ -624,6 +639,7 @@ document.querySelector("#startstop").addEventListener("click", () => {
   switch (play_mode) {
   case 0:
     /* そのまま再生するとPositionが変な値になっていることがあるので現在の再生時間に明示的にシークしてから再生開始 */
+    player.requestMediaSeek(player.timer.position);
     player.requestPlay();
     play_mode = 1;
     break;
@@ -707,9 +723,8 @@ new P5((p5) => {
   const width = default_width;
   const height = default_height;
   const margin = 50;
-  const textAreaWidth = width - margin * 2;
+  const textAreaWidth = width - text_base_pos[0] * 2;
   const frame_rate = 30;
-  let lf_progress = 1;
 
   p5.preload = () => {
     /* 画像を読み込む */
@@ -719,6 +734,8 @@ new P5((p5) => {
     img_back = p5.loadImage("../img/icon_back.png"); /* BACKボタン */
     img_note = p5.loadImage("../img/icon_note.png"); /* 音符ボタン */
     img_effect_note = p5.loadImage("../img/icon_note.png"); /* 音符ボタン */
+    img_zzz1 = p5.loadImage("../img/icon_zzz1.png");
+    img_zzz2 = p5.loadImage("../img/icon_zzz2.png");
 
     img_frame = p5.loadImage("../img/frame.png"); /* 歌詞フレーム */
 
@@ -739,6 +756,7 @@ new P5((p5) => {
     miku_table_body = [img_miku_body_normal, img_miku_body_dance, img_miku_body_sleep];
     miku_table_face = [img_miku_face_normal, img_miku_face_smile, img_miku_face_fun, img_miku_face_sleep];
     song_button_table = [img_song_button, img_song_button_push];
+    zzz_table = [img_zzz1, img_zzz2];
   };
 
   /* キャンバスを作成 */
@@ -819,6 +837,7 @@ new P5((p5) => {
     /* 文字の描画 */
     let char = player.video.findChar(position - 100, { loose: true });
     let beat = player.findBeat(position);
+    let lf_progress = 1;
 
     p5.resizeCanvas(p5.windowWidth, p5.windowHeight);
     p5.scale(general_magnification);
@@ -855,14 +874,17 @@ new P5((p5) => {
       previous_beat = beat;
     }
 
+    /* 戻るボタン */
     p5.image(img_back, back_button_pos_default[0], back_button_pos_default[1]);
-    /* 再生中 or 停止中でライトの色を切り替える */
+
+    /* START/STOPボタン */
     if (play_mode == 1) {
       p5.image(img_startstop_stop, startstop_button_pos_default[0], startstop_button_pos_default[1]);
     } else {
       p5.image(img_startstop_play, startstop_button_pos_default[0], startstop_button_pos_default[1]);
     }
 
+    /* 音符ボタン */
     img_note.resize(350, 0);
 
     if (effect_note == 0) {
@@ -872,12 +894,9 @@ new P5((p5) => {
       p5.pop();
     } else {
       p5.image(img_note, note_button_pos_default[0] - 55, note_button_pos_default[1] - 50);
-      img_effect_note.resize(200, 0);
-      p5.image(img_effect_note, effect_note_pos_table[0][animation_note_index][0], effect_note_pos_table[0][animation_note_index][1]);
-      p5.image(img_effect_note, effect_note_pos_table[1][animation_note_index][0], effect_note_pos_table[1][animation_note_index][1]);
-      p5.image(img_effect_note, effect_note_pos_table[2][animation_note_index][0], effect_note_pos_table[2][animation_note_index][1]);
     }
 
+    /* ▼アイコンの点滅 */
     if (animation_icon_scroll) {
       p5.image(img_scroll, icon_scrill_pos[0], icon_scrill_pos[1]);
     }
@@ -901,26 +920,46 @@ new P5((p5) => {
              miku_pos_default[0] + face_offset_x,
              miku_pos_default[1] + face_offset_y);
 
+    /* エフェクト関連 */
+    if (play_mode == 0) {
+      /* 停止中はzzzエフェクトのみ */
+      if (miku_body == img_miku_body_sleep) {
+        img_zzz1.resize(300, 0);
+        p5.image(zzz_table[0], zzz_pos_table[0][0], zzz_pos_table[0][1]);
+      } else {
+        img_zzz2.resize(300, 0);
+        p5.image(zzz_table[1], zzz_pos_table[1][0], zzz_pos_table[1][1]);
+      }
+    } else {
+      /* 音符エフェクト */
+      if (effect_note == 1) {
+        img_effect_note.resize(200, 0);
+        p5.image(img_effect_note, effect_note_pos_table[0][animation_note_index][0], effect_note_pos_table[0][animation_note_index][1]);
+        p5.image(img_effect_note, effect_note_pos_table[1][animation_note_index][0], effect_note_pos_table[1][animation_note_index][1]);
+        p5.image(img_effect_note, effect_note_pos_table[2][animation_note_index][0], effect_note_pos_table[2][animation_note_index][1]);
+      }
+    }
+
     /* 歌詞の描画 */
     p5.push();
 
-    if (lf_time_list[current_line_num + 1] <= position) {
+    if (lf_time_list[current_line_num] <= position) {
       current_line_num++;
     }
 
     /* 改行時のスクロール処理 */
-    if (lf_time_list[current_line_num + 1] - 100 <= position) {
-      lf_progress = (position + 100 - lf_time_list[current_line_num + 1]) / 100;
+    if (lf_time_list[current_line_num] - 100 <= position) {
+      lf_progress = (position + 100 - lf_time_list[current_line_num]) / 100;
       console.log("%f", lf_progress);
     }
 
-    for (let i = 0; i < char_list_size - 2; i++) {
+    for (let i = 0; i < char_list_size; i++) {
       if ((char_list[i].line - 1 <= current_line_num) &&
           (current_line_num <= char_list[i].line + 2)) {
-        const x = (char_list[i].pos + 0.5) * (textAreaWidth / max_text_in_line);
+        const x = text_base_pos[0] + (char_list[i].pos + 0.5) * text_margin;
         let transparency = 1;
-        let y = char_height_default
-                - (current_line_num - char_list[i].line - 1 + lf_progress) * char_size_default * 1.2;
+        let y = text_base_pos[1]
+                - (current_line_num - char_list[i].line - 1 + lf_progress) * char_size_default * 1.6;
         let size = char_size_default;
 
         // 100 [ms] かけてフェードインしてくる
@@ -1190,6 +1229,6 @@ const CreatePositionList = (song_id) => {
 
   console.log(char_list);
   console.log(lf_time_list);
+  console.log(char_list_size);
 
-  char_list_size++;
 }
