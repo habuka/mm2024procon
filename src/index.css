@@ -63,6 +63,17 @@
   z-index: 201;
 }
 
+/* キャラクターのタップ判定 */
+#character {
+  position: absolute;
+  width: 85px;
+  height: 85px;
+  display: none;
+  background: transparent;
+  border: none;
+  z-index: 201;
+}
+
 /* 楽曲選択画面 */
 #song_select {
   display: flex;

@@ -25,9 +25,9 @@ const char_size_default = 60;
 const max_text_in_line = 23;
 
 /**
- * ミクさんの1ドット辺りの長さ(px)
+ * キャラクターの1ドット辺りの長さ(px)
  */
-const miku_dot_size = 15;
+const character_dot_size = 15;
 
 /**
  * 文字表示領域の基準位置(一番左下)[left, top[px]]
@@ -36,16 +36,16 @@ const miku_dot_size = 15;
 const text_base_pos = [30, 590];
 
 /**
- * ミクの基準位置(中央揃え)[left, top[px]]
+ * キャラクターの基準位置(中央揃え)[left, top[px]]
  * キャンバス倍率1の時の値
  */
-const miku_pos_default = [800, 650];
+const character_pos_default = [800, 650];
 
 /**
  * ダンスアニメーション用基準位置オフセットテーブル(中央揃え)[left, top[px]]
  * キャンバス倍率1の時の値
  */
-const miku_pos_offset_table = [
+const character_pos_offset_table = [
   [0, 0],
   [-30, -30],
   [0, 0],
@@ -61,6 +61,16 @@ const effect_note_pos_table = [
   [[800, 150], [860, 160]],
   [[1200, 550], [1150, 500]],
 ];
+
+/**
+ * キラキラエフェクトテーブル[left, top[px]]
+ * キャンバス倍率1の時の値
+ */
+const effect_star_pos_table = [
+  [[200, 400], [230, 420]],
+  [[1300, 800], [1350, 850]],
+];
+
 
 /**
  * zzzエフェクトテーブル[left, top[px]]
@@ -83,16 +93,68 @@ const icon_scrill_pos = [1420, 1240];
 const startstop_button_pos_default = [0, 790];
 
 /**
+ * START/STOPボタンのサイズ[width, height[px]]
+ * キャンバス倍率1の時の値
+ */
+const startstop_button_size_default = [240, 240];
+
+/**
  * BACKボタンの位置[left, top[px]]
  * キャンバス倍率1の時の値
  */
 const back_button_pos_default = [0, 0];
 
 /**
+ * BACKボタンのサイズ[width, height[px]]
+ * キャンバス倍率1の時の値
+ */
+const back_button_size_default = [240, 240];
+
+/**
  * 音符ボタンの位置[left, top[px]]
  * キャンバス倍率1の時の値
  */
 const note_button_pos_default = [1360, 0];
+
+/**
+ * 音符ボタンのサイズ[width, height[px]]
+ * キャンバス倍率1の時の値
+ */
+const note_button_size_default = [240, 240];
+
+/**
+ * キャラクターボタンの位置[left, top[px]]
+ * キャンバス倍率1の時の値
+ */
+const character_button_pos_default = [475, 325];
+
+/**
+ * キャラクターボタンのサイズ[width, height[px]]
+ * キャンバス倍率1の時の値
+ */
+const character_button_size_default = [650, 650];
+
+/**
+ * ハートとビックリマークの位置
+ * キャンバス倍率1の時の値
+ */
+const emotion_effect_pos = [930, 280];
+
+/**
+ * 楽曲選択ボタンの位置[left, top[px]]
+ * キャンバス倍率1の時の値
+ */
+const song_button_pos_default = [
+  [37, 45], [820, 45],
+  [37, 375], [820, 375],
+  [37, 695], [820, 695],
+];
+
+/**
+ * 楽曲選択ボタンのサイズ[width, height[px]]
+ * キャンバス倍率1の時の値
+ */
+const song_button_size_default = [750, 280];
 
 /**
  * 楽曲選択画面のテキスト位置[center, center[px]]
@@ -106,16 +168,6 @@ const song_select_text_pos = [800, 1210];
 const song_select_text = [
   "きょくを　えらんでね",
   "よみこみちゅう……"
-];
-
-/**
- * 楽曲選択ボタンの位置[left, top[px]]
- * キャンバス倍率1の時の値
- */
-const song_button_pos_default = [
-  [37, 45], [820, 45],
-  [37, 375], [820, 375],
-  [37, 695], [820, 695],
 ];
 
 /**
@@ -221,30 +273,6 @@ const manual_lf_list_song5 = [
 ];
 
 /**
- * START/STOPボタンのサイズ[width, height[px]]
- * キャンバス倍率1の時の値
- */
-const startstop_button_size_default = [240, 240];
-
-/**
- * BACKボタンのサイズ[width, height[px]]
- * キャンバス倍率1の時の値
- */
-const back_button_size_default = [240, 240];
-
-/**
- * 音符ボタンのサイズ[width, height[px]]
- * キャンバス倍率1の時の値
- */
-const note_button_size_default = [240, 240];
-
-/**
- * 楽曲選択ボタンのサイズ[width, height[px]]
- * キャンバス倍率1の時の値
- */
-const song_button_size_default = [750, 280];
-
-/**
  * 楽曲選択
  * -1: 未選択
  * 0 : SUPERHERO / めろくる
@@ -286,6 +314,13 @@ let play_mode = 0;
  * 1: 選択後
  */
 let song_select_mode = 0;
+
+/**
+ * キャラクター
+ * 0: ミク
+ * 1: レン
+ */
+let character = 0;
 
 /**
  * 再生中のダンスのモーション管理
@@ -344,6 +379,12 @@ let current_line_num = 0;
  */
 let text_margin;
 
+/**
+ * 最後にキャラクターをクリックした時間
+ * 表情切り替え管理用
+ */
+let character_clicked_time = 0;
+
 /* プレイヤーの初期化 / Initialize TextAlive Player */
 const player = new Player({
   /* トークンは https://developer.textalive.jp/profile で取得したものを使う */
@@ -378,10 +419,12 @@ player.addListener({
 
   onPlay: () => {
     console.log("player.onPlay");
+    character_clicked_time = 0;
   },
 
   onPause: () => {
     console.log("player.onPause");
+    character_clicked_time = 0;
   },
 
   onSeek: () => {
@@ -543,9 +586,11 @@ const StartPlayer = (id) => {
   InitPlayer();
   song_id = id;
   song_select_mode = 1;
+  character = 0;
   switch (song_id) {
   case 0:
     // SUPERHERO / めろくる
+    character = 1;
     player.createFromSongUrl("https://piapro.jp/t/hZ35/20240130103028", {
       video: {
         // 音楽地図訂正履歴
@@ -638,8 +683,21 @@ const StartPlayer = (id) => {
 document.querySelector("#startstop").addEventListener("click", () => {
   switch (play_mode) {
   case 0:
+    let position = player.timer.position;
+    if (position == player.video.duration) {
+      /* 楽曲の終端に到達していた場合、先頭に戻して再生開始 */
+      console.log("reset");
+      /* 各種インデックスの初期化 */
+      position = 0;
+      current_line_num = 0;
+      animation_pose_index = 0;
+      animation_offset_index = 0;
+      animation_note_index = 0;
+      animation_icon_scroll = 0;
+      previous_beat = null;
+    }
     /* そのまま再生するとPositionが変な値になっていることがあるので現在の再生時間に明示的にシークしてから再生開始 */
-    player.requestMediaSeek(player.timer.position);
+    player.requestMediaSeek(position);
     player.requestPlay();
     play_mode = 1;
     break;
@@ -664,57 +722,20 @@ document.querySelector("#note").addEventListener("click", () => {
   effect_note = (effect_note + 1) % 2;
 });
 
-/* 皿回し開始処理 */
+/* キャラクターのタップ判定 */
 /* マウス操作用イベントハンドラ */
-document.querySelector("#p5js").addEventListener("mousedown", (e) => {
-  mousedown(e);
+document.querySelector("#character").addEventListener("mousedown", (e) => {
+  CharacterClick(e);
 });
 
 /* タッチ操作用イベントハンドラ */
-document.querySelector("#p5js").addEventListener("touchstart", (e) => {
-  mousedown(e.changedTouches[0]);
+document.querySelector("#character").addEventListener("touchstart", (e) => {
+  CharacterClick(e.changedTouches[0]);
 });
 
 /* 共通処理 */
-const mousedown = (e) => {
-  ;
-}
-
-/* 皿回し回転処理 */
-/* マウス操作用イベントハンドラ */
-document.querySelector("#p5js").addEventListener("mousemove", (e) => {
-  mousemove(e);
-});
-
-/* タッチ操作用イベントハンドラ */
-document.querySelector("#p5js").addEventListener("touchmove", (e) => {
-  mousemove(e.changedTouches[0]);
-});
-
-/* 共通処理 */
-const mousemove = (e) => {
-  ;
-}
-
-/* 皿回し終了処理 */
-/* マウス操作用イベントハンドラ */
-document.querySelector("#p5js").addEventListener("mouseup", (e) => {
-  mouseup(e);
-});
-
-/* マウス操作用イベントハンドラ */
-document.querySelector("#p5js").addEventListener("mouseleave", (e) => {
-  mouseup(e);
-});
-
-/* タッチ操作用イベントハンドラ */
-document.querySelector("#p5js").addEventListener("touchend", (e) => {
-  mouseup(e.changedTouches[0]);
-});
-
-/* 共通処理 */
-const mouseup = (e) => {
-  ;
+const CharacterClick = (e) => {
+  character_clicked_time = Date.now();
 }
 
 /* p5.js を初期化 */
@@ -723,7 +744,6 @@ new P5((p5) => {
   const width = default_width;
   const height = default_height;
   const margin = 50;
-  const textAreaWidth = width - text_base_pos[0] * 2;
   const frame_rate = 30;
 
   p5.preload = () => {
@@ -736,25 +756,37 @@ new P5((p5) => {
     img_effect_note = p5.loadImage("../img/icon_note.png"); /* 音符ボタン */
     img_zzz1 = p5.loadImage("../img/icon_zzz1.png");
     img_zzz2 = p5.loadImage("../img/icon_zzz2.png");
+    img_heart = p5.loadImage("../img/icon_heart.png");
+    img_surprise = p5.loadImage("../img/icon_surprise.png");
+    img_star = p5.loadImage("../img/icon_star.png");
 
     img_frame = p5.loadImage("../img/frame.png"); /* 歌詞フレーム */
 
-    img_miku_body_normal = p5.loadImage("../img/miku_body_normal.png");
-    img_miku_body_dance = p5.loadImage("../img/miku_body_dance.png");
-    img_miku_body_sleep = p5.loadImage("../img/miku_body_sleep.png");
+    img_icon_miku = p5.loadImage("../img/icon_miku.png");
+    img_icon_len = p5.loadImage("../img/icon_len.png");
 
-    img_miku_face_normal = p5.loadImage("../img/miku_face_normal.png");
-    img_miku_face_smile = p5.loadImage("../img/miku_face_smile.png");
-    img_miku_face_fun = p5.loadImage("../img/miku_face_fun.png");
-    img_miku_face_sleep = p5.loadImage("../img/miku_face_sleep.png");
+    img_body_miku_normal = p5.loadImage("../img/body_miku_normal.png");
+    img_body_miku_dance = p5.loadImage("../img/body_miku_dance.png");
+    img_body_miku_sleep = p5.loadImage("../img/body_miku_sleep.png");
+
+    img_body_len_normal = p5.loadImage("../img/body_len_normal.png");
+    img_body_len_dance = p5.loadImage("../img/body_len_dance.png");
+    img_body_len_sleep = p5.loadImage("../img/body_len_sleep.png");
+
+    img_face_normal = p5.loadImage("../img/face_normal.png");
+    img_face_smile = p5.loadImage("../img/face_smile.png");
+    img_face_fun = p5.loadImage("../img/face_fun.png");
+    img_face_sleep = p5.loadImage("../img/face_sleep.png");
+    img_face_surprise = p5.loadImage("../img/face_surprise.png");
 
     img_song_button = p5.loadImage("../img/song_button.png");
     img_song_button_push = p5.loadImage("../img/song_button_push.png");
     img_scroll = p5.loadImage("../img/icon_scroll.png");
 
     /* アニメーション用テーブルを作成 */
-    miku_table_body = [img_miku_body_normal, img_miku_body_dance, img_miku_body_sleep];
-    miku_table_face = [img_miku_face_normal, img_miku_face_smile, img_miku_face_fun, img_miku_face_sleep];
+    table_body = [[img_body_miku_normal, img_body_miku_dance, img_body_miku_sleep],
+                  [img_body_len_normal, img_body_len_dance, img_body_len_sleep]];
+    table_face = [img_face_normal, img_face_smile, img_face_fun, img_face_sleep, img_face_surprise];
     song_button_table = [img_song_button, img_song_button_push];
     zzz_table = [img_zzz1, img_zzz2];
   };
@@ -799,6 +831,9 @@ new P5((p5) => {
     p5.image(img_background, 0, 0);
     p5.image(img_frame, 0, 0);
 
+    img_icon_len.resize(110, 0);
+    img_icon_miku.resize(110, 0);
+
     p5.fill(0, 0, 0);
     p5.textSize(50);
     for (let i = 0; i < 6; i++) {
@@ -809,6 +844,11 @@ new P5((p5) => {
       p5.text(song_info[i][1],
               song_button_pos_default[i][0] + song_button_size_default[0] / 2,
               song_button_pos_default[i][1] + song_button_size_default[1] / 2 + 30);
+      if (i == 0) {
+        p5.image(img_icon_len, song_button_pos_default[i][0] + 20, song_button_pos_default[i][1] + 140);
+      } else {
+        p5.image(img_icon_miku, song_button_pos_default[i][0] + 20, song_button_pos_default[i][1] + 140);
+      }
     }
     p5.textSize(80);
     p5.text(song_select_text[song_select_mode], song_select_text_pos[0], song_select_text_pos[1]);
@@ -903,40 +943,60 @@ new P5((p5) => {
 
     p5.imageMode(p5.CENTER);
 
-    let body_offset_x = miku_pos_offset_table[animation_offset_index][0];
-    let body_offset_y = miku_pos_offset_table[animation_offset_index][1];
-    let face_offset_x = miku_pos_offset_table[animation_offset_index][0];
-    let face_offset_y = miku_pos_offset_table[animation_offset_index][1];
+    let body_offset_x = character_pos_offset_table[animation_offset_index][0];
+    let body_offset_y = character_pos_offset_table[animation_offset_index][1];
+    let face_offset_x = character_pos_offset_table[animation_offset_index][0];
+    let face_offset_y = character_pos_offset_table[animation_offset_index][1];
 
-    miku_body = p5.GetMikuBody();
-    if (miku_body == img_miku_body_sleep) {
-      face_offset_y += miku_dot_size;
+    body = p5.GetBody();
+    face = p5.GetFace();
+
+    if ((body == img_body_miku_sleep) ||
+        (body == img_body_len_sleep)) {
+      face_offset_y += character_dot_size;
     }
 
-    p5.image(miku_body,
-             miku_pos_default[0] + body_offset_x,
-             miku_pos_default[1] + body_offset_y);
-    p5.image(p5.GetMikuFace(),
-             miku_pos_default[0] + face_offset_x,
-             miku_pos_default[1] + face_offset_y);
+    p5.image(body,
+             character_pos_default[0] + body_offset_x,
+             character_pos_default[1] + body_offset_y);
+    p5.image(face,
+             character_pos_default[0] + face_offset_x,
+             character_pos_default[1] + face_offset_y);
 
     /* エフェクト関連 */
     if (play_mode == 0) {
-      /* 停止中はzzzエフェクトのみ */
-      if (miku_body == img_miku_body_sleep) {
-        img_zzz1.resize(300, 0);
-        p5.image(zzz_table[0], zzz_pos_table[0][0], zzz_pos_table[0][1]);
+      /* 停止中はzzzと!!エフェクトのみ */
+      if (face == img_face_surprise) {
+        img_surprise.resize(300, 0);
+      p5.image(img_surprise, emotion_effect_pos[0], emotion_effect_pos[1]);
       } else {
-        img_zzz2.resize(300, 0);
-        p5.image(zzz_table[1], zzz_pos_table[1][0], zzz_pos_table[1][1]);
+        if ((body == img_body_miku_sleep) ||
+            (body == img_body_len_sleep)) {
+          img_zzz1.resize(300, 0);
+          p5.image(zzz_table[0], zzz_pos_table[0][0], zzz_pos_table[0][1]);
+        } else {
+          img_zzz2.resize(300, 0);
+          p5.image(zzz_table[1], zzz_pos_table[1][0], zzz_pos_table[1][1]);
+        }
       }
     } else {
+      /* ハートエフェクト */
+      if (face == img_face_smile) {
+        img_heart.resize(250, 0);
+        p5.image(img_heart, emotion_effect_pos[0], emotion_effect_pos[1]);
+      }
       /* 音符エフェクト */
       if (effect_note == 1) {
         img_effect_note.resize(200, 0);
         p5.image(img_effect_note, effect_note_pos_table[0][animation_note_index][0], effect_note_pos_table[0][animation_note_index][1]);
         p5.image(img_effect_note, effect_note_pos_table[1][animation_note_index][0], effect_note_pos_table[1][animation_note_index][1]);
         p5.image(img_effect_note, effect_note_pos_table[2][animation_note_index][0], effect_note_pos_table[2][animation_note_index][1]);
+      }
+      /* キラキラエフェクト(サビで自動出現) */
+      if (player.findChorus(player.timer.position)) {
+        img_star.resize(200, 0);
+        p5.image(img_star, effect_star_pos_table[0][animation_note_index][0], effect_star_pos_table[0][animation_note_index][1]);
+        p5.image(img_star, effect_star_pos_table[1][animation_note_index][0], effect_star_pos_table[1][animation_note_index][1]);
       }
     }
 
@@ -954,23 +1014,22 @@ new P5((p5) => {
     }
 
     for (let i = 0; i < char_list_size; i++) {
-      if ((char_list[i].line - 1 <= current_line_num) &&
-          (current_line_num <= char_list[i].line + 2)) {
+      if ((char_list[i].line <= current_line_num) &&
+          (current_line_num <= char_list[i].line + 2) &&
+          (char_list[i].start_time - 100 <= position)) {
         const x = text_base_pos[0] + (char_list[i].pos + 0.5) * text_margin;
-        let transparency = 1;
         let y = text_base_pos[1]
                 - (current_line_num - char_list[i].line - 1 + lf_progress) * char_size_default * 1.6;
         let size = char_size_default;
 
-        // 100 [ms] かけてフェードインしてくる
-        if (position < char_list[i].start_time) {
-          const progress = 1 - (char_list[i].start_time - position) / 100;
-          const eased = Ease.circIn(progress);
-          transparency = progress;
-          size = char_size_default * eased + Math.min(width, height) * (1 - eased);
+        /* ムクッと出現する感じのアニメーション */
+        if (position < char_list[i].start_time - 50) {
+          size = char_size_default * 0.4;
+        } else if (position < char_list[i].start_time) {
+          size = char_size_default * 1.8;
         }
 
-        p5.fill(0, 0, 0, transparency * 100);
+        p5.fill(0, 0, 0, 100);
         p5.textSize(size);
         p5.text(char_list[i].char, margin + x, height / 2 + y);
       }
@@ -982,26 +1041,25 @@ new P5((p5) => {
   };
 
 /**
- * @fn GetMikuBody
- * @brief ミクさんのポーズを取得する
+ * @fn GetBody
+ * @brief キャラクターのポーズを取得する
  * @return 使用する画像
  */
-  p5.GetMikuBody = () => {
-    let img = miku_table_body[1];
+  p5.GetBody = () => {
+    let img = table_body[character][0];
     let x_offset = 0;
     let y_offset = 0;
     switch (play_mode) {
     case 0:
       let date = new Date();
       sec = date.getSeconds();
-      if (sec % 2 == 0) {
-        img = miku_table_body[0];
-      } else {
-        img = miku_table_body[2];
+      if ((sec % 2 == 1) &&
+          (Date.now() - character_clicked_time > 2000)) {
+        img = table_body[character][2];
       }
       break;
     case 1:
-      img = miku_table_body[animation_pose_index];
+      img = table_body[character][animation_pose_index];
     default:
       break;
     }
@@ -1009,26 +1067,34 @@ new P5((p5) => {
   };
 
 /**
- * @fn GetMikuFace
- * @brief ミクさんの表情を取得する
+ * @fn GetFace
+ * @brief キャラクターの表情を取得する
  * @return 使用する画像
  */
-  p5.GetMikuFace = () => {
-    let img = miku_table_face[1];
-    switch (play_mode) {
-    case 0:
-      img = miku_table_face[3];
-      break;
-    case 1:
-      if (player.findChorus(player.timer.position)) {
-        /* サビ区間は><目になる */
-        img = img = miku_table_face[2];
+  p5.GetFace = () => {
+    let img = table_face[1];
+    if (Date.now() - character_clicked_time <= 2000) {
+      if (play_mode == 0) {
+        img = table_face[4];
       } else {
-        img = miku_table_face[0];
+        img = table_face[1];
       }
-      break;
-    default:
-      break;
+    } else {
+      switch (play_mode) {
+      case 0:
+        img = table_face[3];
+        break;
+      case 1:
+        if (player.findChorus(player.timer.position)) {
+          /* サビ区間は><目になる */
+          img = img = table_face[2];
+        } else {
+          img = table_face[0];
+        }
+        break;
+      default:
+        break;
+      }
     }
     return img;
   };
@@ -1096,6 +1162,12 @@ new P5((p5) => {
     note_button.style.left = (note_button_pos_default[0] * general_magnification) + 'px';
     note_button.style.top = (note_button_pos_default[1] * general_magnification) + 'px';
 
+    character_button = document.getElementById("character");
+    character_button.style.width = (character_button_size_default[0] * general_magnification) + 'px';
+    character_button.style.height = (character_button_size_default[1] * general_magnification) + 'px';
+    character_button.style.left = (character_button_pos_default[0] * general_magnification) + 'px';
+    character_button.style.top = (character_button_pos_default[1] * general_magnification) + 'px';
+
     song0_button = document.getElementById("song_0");
     song0_button.style.width = (song_button_size_default[0] * general_magnification) + 'px';
     song0_button.style.height = (song_button_size_default[1] * general_magnification) + 'px';
@@ -1145,6 +1217,7 @@ const SetSceneSongSelect = () => {
   document.getElementById('startstop').style.display = "none";
   document.getElementById('back').style.display = "none";
   document.getElementById('note').style.display = "none";
+  document.getElementById('character').style.display = "none";
   document.getElementById('p5js').style.display = "flex";
 }
 
@@ -1159,6 +1232,7 @@ const SetScenePlayer = () => {
   document.getElementById('startstop').style.display = "block";
   document.getElementById('back').style.display = "block";
   document.getElementById('note').style.display = "block";
+  document.getElementById('character').style.display = "block";
   document.getElementById('p5js').style.display = "flex";
 }
 
@@ -1173,6 +1247,7 @@ const CreatePositionList = (song_id) => {
   let manual_lf_list_size = 0;
 
   char_list = {};
+  lf_time_list = {};
   line_num = 0;
   current_line_num = 0;
   char_list_size = 0;
