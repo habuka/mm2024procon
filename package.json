@@ -1,8 +1,8 @@
 {
-  "name": "magical_turntable",
+  "name": "picopico_onstage",
   "private": true,
   "version": "1.0.0",
-  "description": "『初音ミク「マジカルミライ 2023」プログラミング・コンテスト』応募作品「マジカルターンテーブル」",
+  "description": "『初音ミク「マジカルミライ 2024」プログラミング・コンテスト』応募作品「ピコピコオンステージ！」",
   "scripts": {
     "dev": "parcel src/index.html --dist-dir dev",
     "build": "parcel build src/index.html --public-url ./ --dist-dir docs --no-source-maps",
@@ -11,13 +11,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/habuka/MagicalTurntable.git"
+    "url": "git+https://github.com/habuka/mm2024procon.git"
   },
   "keywords": [
     "textalive"
   ],
   "license": "MIT",
-  "homepage": "https://github.com/habuka/MagicalTurntable.git#readme",
+  "homepage": "https://github.com/habuka/mm2024procon.git#readme",
   "dependencies": {
     "p5": "^1.1.9",
     "textalive-app-api": "^0.3.0"
