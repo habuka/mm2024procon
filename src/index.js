@@ -626,87 +626,87 @@ const StartPlayer = (id) => {
   character = 0;
   switch (song_id) {
   case 0:
-    // SUPERHERO / めろくる
+    /* SUPERHERO / めろくる */
     character = 1;
     player.createFromSongUrl("https://piapro.jp/t/hZ35/20240130103028", {
       video: {
-        // 音楽地図訂正履歴
+        /* 音楽地図訂正履歴 */
         beatId: 4592293,
         chordId: 2727635,
         repetitiveSegmentId: 2824326,
-        // 歌詞タイミング訂正履歴: https://textalive.jp/lyrics/piapro.jp%2Ft%2FhZ35%2F20240130103028
+        /* 歌詞タイミング訂正履歴: https://textalive.jp/lyrics/piapro.jp%2Ft%2FhZ35%2F20240130103028 */
         lyricId: 59415,
         lyricDiffId: 13962
       },
     });
     break;
   case 1:
-    // いつか君と話したミライは / タケノコ少年
+    /* いつか君と話したミライは / タケノコ少年 */
     animation_airplane_index += 3;
     player.createFromSongUrl("https://piapro.jp/t/--OD/20240202150903", {
       video: {
-        // 音楽地図訂正履歴
+        /* 音楽地図訂正履歴 */
         beatId: 4592296,
         chordId: 2727636,
         repetitiveSegmentId: 2824327,
-        // 歌詞タイミング訂正履歴: https://textalive.jp/lyrics/piapro.jp%2Ft%2F--OD%2F20240202150903
+        /* 歌詞タイミング訂正履歴: https://textalive.jp/lyrics/piapro.jp%2Ft%2F--OD%2F20240202150903 */
         lyricId: 59416,
         lyricDiffId: 13963
       },
     });
     break;
   case 2:
-    // フューチャーノーツ / shikisai
+    /* フューチャーノーツ / shikisai */
     player.createFromSongUrl("https://piapro.jp/t/XiaI/20240201203346", {
       video: {
-        // 音楽地図訂正履歴
+        /* 音楽地図訂正履歴 */
         beatId: 4592297,
         chordId: 2727637,
         repetitiveSegmentId: 2824328,
-        // 歌詞タイミング訂正履歴: https://textalive.jp/lyrics/piapro.jp%2Ft%2FXiaI%2F20240201203346
+        /* 歌詞タイミング訂正履歴: https://textalive.jp/lyrics/piapro.jp%2Ft%2FXiaI%2F20240201203346 */
         lyricId: 59417,
         lyricDiffId: 13964
       },
     });
     break;
   case 3:
-    // 未来交響曲 / ヤマギシコージ
+    /* 未来交響曲 / ヤマギシコージ */
     player.createFromSongUrl("https://piapro.jp/t/Rejk/20240202164429", {
       video: {
-        // 音楽地図訂正履歴
+        /* 音楽地図訂正履歴 */
         beatId: 4592298,
         chordId: 2727638,
         repetitiveSegmentId: 2824329,
-        // 歌詞タイミング訂正履歴: https://textalive.jp/lyrics/piapro.jp%2Ft%2FRejk%2F20240202164429
+        /* 歌詞タイミング訂正履歴: https://textalive.jp/lyrics/piapro.jp%2Ft%2FRejk%2F20240202164429 */
         lyricId: 59418,
         lyricDiffId: 13965
       },
     });
     break;
   case 4:
-    // リアリティ / 歩く人 & sober bear
+    /* リアリティ / 歩く人 & sober bear */
     animation_airplane_index += 1;
     player.createFromSongUrl("https://piapro.jp/t/ELIC/20240130010349", {
       video: {
-        // 音楽地図訂正履歴
+        /* 音楽地図訂正履歴 */
         beatId: 4592299,
         chordId: 2727639,
         repetitiveSegmentId: 2824330,
-        // 歌詞タイミング訂正履歴: https://textalive.jp/lyrics/piapro.jp%2Ft%2FELIC%2F20240130010349
+        /* 歌詞タイミング訂正履歴: https://textalive.jp/lyrics/piapro.jp%2Ft%2FELIC%2F20240130010349 */
         lyricId: 59419,
         lyricDiffId: 13966
       },
     });
     break;
   case 5:
-    // The Marks / 2ouDNS
+    /* The Marks / 2ouDNS */
     player.createFromSongUrl("https://piapro.jp/t/xEA7/20240202002556", {
       video: {
-        // 音楽地図訂正履歴
+        /* 音楽地図訂正履歴 */
         beatId: 4592300,
         chordId: 2727640,
         repetitiveSegmentId: 2824331,
-        // 歌詞タイミング訂正履歴: https://textalive.jp/lyrics/piapro.jp%2Ft%2FxEA7%2F20240202002556
+        /* 歌詞タイミング訂正履歴: https://textalive.jp/lyrics/piapro.jp%2Ft%2FxEA7%2F20240202002556 */
         lyricId: 59420,
         lyricDiffId: 13967
       },
@@ -724,9 +724,7 @@ document.querySelector("#startstop").addEventListener("click", () => {
   case 0:
     let position = player.timer.position;
     if (position == player.video.duration) {
-      /* 楽曲の終端に到達していた場合、先頭に戻して再生開始 */
-      console.log("reset");
-      /* 各種インデックスの初期化 */
+      /* 楽曲の終端に到達していた場合、各種インデックスを初期化して先頭に戻して再生開始 */
       position = 0;
       current_line_num = 0;
       animation_pose_index = 0;
@@ -793,42 +791,45 @@ new P5((p5) => {
 
   p5.preload = () => {
     /* 画像を読み込む */
+    /* 画面関連 */
     img_background = p5.loadImage("../img/background.png"); /* 背景 */
+    img_frame = p5.loadImage("../img/frame.png"); /* 歌詞フレーム */
+
+    /* ボタン関連 */
     img_startstop_play = p5.loadImage("../img/icon_start.png"); /* START/STOPボタン(再生中) */
     img_startstop_stop = p5.loadImage("../img/icon_pause.png"); /* START/STOPボタン(停止中) */
     img_back = p5.loadImage("../img/icon_back.png"); /* BACKボタン */
     img_note = p5.loadImage("../img/icon_note.png"); /* 音符ボタン */
-    img_effect_note = p5.loadImage("../img/icon_note.png"); /* 音符ボタン */
-    img_zzz1 = p5.loadImage("../img/icon_zzz1.png");
-    img_zzz2 = p5.loadImage("../img/icon_zzz2.png");
-    img_heart = p5.loadImage("../img/icon_heart.png");
-    img_surprise = p5.loadImage("../img/icon_surprise.png");
-    img_star = p5.loadImage("../img/icon_star.png");
-    img_airplane = p5.loadImage("../img/icon_airplane.png");
-    img_airplane2 = p5.loadImage("../img/icon_airplane2.png");
+    img_airplane = p5.loadImage("../img/icon_airplane.png"); /* 飛行機ボタン */
+    img_song_button = p5.loadImage("../img/song_button.png"); /* 楽曲選択ボタン */
+    img_song_button_push = p5.loadImage("../img/song_button_push.png"); /* 楽曲選択ボタン(押) */
+    img_icon_miku = p5.loadImage("../img/icon_miku.png"); /* ミクの顔 */
+    img_icon_len = p5.loadImage("../img/icon_len.png"); /* レンの顔 */
 
-    img_frame = p5.loadImage("../img/frame.png"); /* 歌詞フレーム */
+    /* エフェクト関連 */
+    img_effect_note = p5.loadImage("../img/icon_note.png"); /* 音符 */
+    img_zzz1 = p5.loadImage("../img/icon_zzz1.png"); /* zzz */
+    img_zzz2 = p5.loadImage("../img/icon_zzz2.png"); /* zzz */
+    img_heart = p5.loadImage("../img/icon_heart.png"); /* ハート */
+    img_surprise = p5.loadImage("../img/icon_surprise.png"); /* びっくり */
+    img_star = p5.loadImage("../img/icon_star.png"); /* キラキラ */
+    img_airplane2 = p5.loadImage("../img/icon_airplane2.png"); /* 飛行機 */
+    img_scroll = p5.loadImage("../img/icon_scroll.png"); /* ▼ */
 
-    img_icon_miku = p5.loadImage("../img/icon_miku.png");
-    img_icon_len = p5.loadImage("../img/icon_len.png");
+    /* キャラクター関連 */
+    img_body_miku_normal = p5.loadImage("../img/body_miku_normal.png"); /* ミク体(普) */
+    img_body_miku_dance = p5.loadImage("../img/body_miku_dance.png"); /* ミク体(踊) */
+    img_body_miku_sleep = p5.loadImage("../img/body_miku_sleep.png"); /* ミク体(眠) */
 
-    img_body_miku_normal = p5.loadImage("../img/body_miku_normal.png");
-    img_body_miku_dance = p5.loadImage("../img/body_miku_dance.png");
-    img_body_miku_sleep = p5.loadImage("../img/body_miku_sleep.png");
+    img_body_len_normal = p5.loadImage("../img/body_len_normal.png"); /* レン体(普) */
+    img_body_len_dance = p5.loadImage("../img/body_len_dance.png"); /* レン体(踊) */
+    img_body_len_sleep = p5.loadImage("../img/body_len_sleep.png"); /* レン体(眠) */
 
-    img_body_len_normal = p5.loadImage("../img/body_len_normal.png");
-    img_body_len_dance = p5.loadImage("../img/body_len_dance.png");
-    img_body_len_sleep = p5.loadImage("../img/body_len_sleep.png");
-
-    img_face_normal = p5.loadImage("../img/face_normal.png");
-    img_face_smile = p5.loadImage("../img/face_smile.png");
-    img_face_fun = p5.loadImage("../img/face_fun.png");
-    img_face_sleep = p5.loadImage("../img/face_sleep.png");
-    img_face_surprise = p5.loadImage("../img/face_surprise.png");
-
-    img_song_button = p5.loadImage("../img/song_button.png");
-    img_song_button_push = p5.loadImage("../img/song_button_push.png");
-    img_scroll = p5.loadImage("../img/icon_scroll.png");
+    img_face_normal = p5.loadImage("../img/face_normal.png"); /* 表情(普) */
+    img_face_smile = p5.loadImage("../img/face_smile.png"); /* 表情(笑) */
+    img_face_fun = p5.loadImage("../img/face_fun.png"); /* 表情(><) */
+    img_face_sleep = p5.loadImage("../img/face_sleep.png"); /* 表情(眠) */
+    img_face_surprise = p5.loadImage("../img/face_surprise.png"); /* 表情(驚) */
 
     /* アニメーション用テーブルを作成 */
     table_body = [[img_body_miku_normal, img_body_miku_dance, img_body_miku_sleep],
@@ -922,8 +923,10 @@ new P5((p5) => {
     }
 
     /* 文字の描画 */
-    let char = player.video.findChar(position - 100, { loose: true });
     let beat = player.findBeat(position);
+    if (previous_beat == null) {
+      previous_beat = beat;
+    }
     let lf_progress = 1;
 
     p5.resizeCanvas(p5.windowWidth, p5.windowHeight);
@@ -943,22 +946,24 @@ new P5((p5) => {
 
     /* ビート情報の更新 */
     if (beat) {
-      console.log("%d %d %d %d\n", beat.index, beat.position, beat.length, animation_offset_index);
-      /* ビート境界時のみ */
-      if (previous_beat &&
-          (previous_beat.index < beat.index)) {
-        animation_icon_scroll = (animation_icon_scroll + 1) % 2;
-        if (beat.length % 2 == 0) {
-          if (beat.position % 2 != 0) {
-            p5.ProgressAnimation();
-          }
-        } else {
-          if (beat.position == 1) {
-            p5.ProgressAnimation();
+      /* 一時停止解除直後に再生時間が巻き戻っている期間を弾く */
+      if (previous_beat.index <= beat.index) {
+        /* ビート境界時のみ */
+        if (previous_beat &&
+            (previous_beat.index < beat.index)) {
+          animation_icon_scroll = (animation_icon_scroll + 1) % 2;
+          if (beat.length % 2 == 0) {
+            if (beat.position % 2 != 0) {
+              p5.ProgressAnimation();
+            }
+          } else {
+            if (beat.position == 1) {
+              p5.ProgressAnimation();
+            }
           }
         }
+        previous_beat = beat;
       }
-      previous_beat = beat;
     }
 
     /* 戻るボタン */
@@ -1075,7 +1080,6 @@ new P5((p5) => {
     /* 改行時のスクロール処理 */
     if (lf_time_list[current_line_num] - 100 <= position) {
       lf_progress = (position + 100 - lf_time_list[current_line_num]) / 100;
-      console.log("%f", lf_progress);
     }
 
     for (let i = 0; i < char_list_size; i++) {
@@ -1174,22 +1178,6 @@ new P5((p5) => {
     animation_offset_index = (animation_offset_index + 1) % 4;
     animation_note_index = (animation_note_index + 1) % 2;
     animation_airplane_index = (animation_airplane_index + 1) % 4;
-  };
-
-/**
- * @fn GetNextChar
- * @brief 入力時刻における次の発声文字を取得する
- * @param[in] position: 検索したい時刻
- * @return 次の発声文字
- * @detail 発声中の場合、現在発声中の次の文字を返す
- */
-  p5.GetNextChar = (position) => {
-    let next_char = player.video.findChar(position, { loose: true });
-    if (player.video.findChar(position, { loose: false }) != null) {
-      /* 発声中の場合、現在発声中の次の文字 */
-      next_char = next_char.next;
-    }
-    return next_char;
   };
 
 /**
@@ -1375,9 +1363,4 @@ const CreatePositionList = (song_id) => {
     pos_in_line++;
     char_list_size++;
   }
-
-  console.log(char_list);
-  console.log(lf_time_list);
-  console.log(char_list_size);
-
 }
