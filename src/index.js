@@ -147,13 +147,13 @@ const airplane_button_size_default = [240, 240];
  * キャラクターボタンの位置[left, top[px]]
  * キャンバス倍率1の時の値
  */
-const character_button_pos_default = [475, 325];
+const character_button_pos_default = [475, 300];
 
 /**
  * キャラクターボタンのサイズ[width, height[px]]
  * キャンバス倍率1の時の値
  */
-const character_button_size_default = [650, 650];
+const character_button_size_default = [650, 700];
 
 /**
  * ハートとビックリマークの位置
