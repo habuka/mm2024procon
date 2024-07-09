@@ -39,7 +39,7 @@ const text_base_pos = [30, 590];
  * キャラクターの基準位置(中央揃え)[left, top[px]]
  * キャンバス倍率1の時の値
  */
-const character_pos_default = [800, 650];
+const character_pos_default = [800, 700];
 
 /**
  * ダンスアニメーション用基準位置オフセットテーブル(中央揃え)[left, top[px]]
@@ -57,8 +57,8 @@ const character_pos_offset_table = [
  * キャンバス倍率1の時の値
  */
 const effect_note_pos_table = [
-  [[350, 400], [420, 280]],
-  [[800, 150], [860, 160]],
+  [[380, 560], [420, 480]],
+  [[800, 210], [860, 220]],
   [[1200, 550], [1150, 500]],
 ];
 
@@ -67,7 +67,8 @@ const effect_note_pos_table = [
  * キャンバス倍率1の時の値
  */
 const effect_star_pos_table = [
-  [[200, 400], [230, 420]],
+  [[350, 810], [380, 770]],
+  [[620, 230], [540, 260]],
   [[1300, 800], [1350, 850]],
 ];
 
@@ -78,6 +79,14 @@ const effect_star_pos_table = [
  */
 const zzz_pos_table = [
   [800, 210], [810, 180],
+];
+
+/**
+ * 飛行機エフェクトテーブル[left, top[px]]
+ * キャンバス倍率1の時の値
+ */
+const airplane_pos_table = [
+  [1200, 80], [934, 80], [667, 80], [400, 80],
 ];
 
 /**
@@ -123,6 +132,18 @@ const note_button_pos_default = [1360, 0];
 const note_button_size_default = [240, 240];
 
 /**
+ * 飛行機ボタンの位置[left, top[px]]
+ * キャンバス倍率1の時の値
+ */
+const airplane_button_pos_default = [1360, 240];
+
+/**
+ * 飛行機ボタンのサイズ[width, height[px]]
+ * キャンバス倍率1の時の値
+ */
+const airplane_button_size_default = [240, 240];
+
+/**
  * キャラクターボタンの位置[left, top[px]]
  * キャンバス倍率1の時の値
  */
@@ -138,7 +159,7 @@ const character_button_size_default = [650, 650];
  * ハートとビックリマークの位置
  * キャンバス倍率1の時の値
  */
-const emotion_effect_pos = [930, 280];
+const emotion_effect_pos = [1010, 350];
 
 /**
  * 楽曲選択ボタンの位置[left, top[px]]
@@ -342,6 +363,14 @@ let animation_note_index = 0;
  */
 let animation_icon_scroll = 0;
 
+/**
+ * 再生中の飛行機エフェクト管理
+ */
+let animation_airplane_index = 0;
+
+/**
+ * ビート切り替わりの検出用に直前のビート情報を保存
+ */
 let previous_beat = null;
 
 /**
@@ -353,6 +382,11 @@ let song_button_pushed = [0, 0, 0, 0, 0, 0];
  * 音符演出ON/OFFフラグ(0 or 1)
  */
 let effect_note = 0;
+
+/**
+ * 飛行機演出ON/OFFフラグ(0 or 1)
+ */
+let effect_airplane = 0;
 
 /**
  * 歌詞ごとの制御情報のリスト
@@ -573,8 +607,11 @@ const InitPlayer = () => {
   animation_pose_index = 0;
   animation_offset_index = 0;
   animation_note_index = 0;
+  animation_airplane_index = 0;
+  animation_icon_scroll = 0;
   previous_beat = null;
   effect_note = 0;
+  effect_airplane = 0;
 }
 
 /**
@@ -605,6 +642,7 @@ const StartPlayer = (id) => {
     break;
   case 1:
     // いつか君と話したミライは / タケノコ少年
+    animation_airplane_index += 3;
     player.createFromSongUrl("https://piapro.jp/t/--OD/20240202150903", {
       video: {
         // 音楽地図訂正履歴
@@ -647,6 +685,7 @@ const StartPlayer = (id) => {
     break;
   case 4:
     // リアリティ / 歩く人 & sober bear
+    animation_airplane_index += 1;
     player.createFromSongUrl("https://piapro.jp/t/ELIC/20240130010349", {
       video: {
         // 音楽地図訂正履歴
@@ -693,6 +732,7 @@ document.querySelector("#startstop").addEventListener("click", () => {
       animation_pose_index = 0;
       animation_offset_index = 0;
       animation_note_index = 0;
+      animation_airplane_index = 0;
       animation_icon_scroll = 0;
       previous_beat = null;
     }
@@ -720,6 +760,11 @@ document.querySelector("#back").addEventListener("click", () => {
 /* 音符ボタン */
 document.querySelector("#note").addEventListener("click", () => {
   effect_note = (effect_note + 1) % 2;
+});
+
+/* 飛行機ボタン */
+document.querySelector("#airplane").addEventListener("click", () => {
+  effect_airplane = (effect_airplane + 1) % 2;
 });
 
 /* キャラクターのタップ判定 */
@@ -759,6 +804,8 @@ new P5((p5) => {
     img_heart = p5.loadImage("../img/icon_heart.png");
     img_surprise = p5.loadImage("../img/icon_surprise.png");
     img_star = p5.loadImage("../img/icon_star.png");
+    img_airplane = p5.loadImage("../img/icon_airplane.png");
+    img_airplane2 = p5.loadImage("../img/icon_airplane2.png");
 
     img_frame = p5.loadImage("../img/frame.png"); /* 歌詞フレーム */
 
@@ -936,6 +983,18 @@ new P5((p5) => {
       p5.image(img_note, note_button_pos_default[0] - 55, note_button_pos_default[1] - 50);
     }
 
+    /* 飛行機ボタン */
+    img_airplane.resize(320, 0);
+
+    if (effect_airplane == 0) {
+      p5.push();
+      p5.tint(255, 30);
+      p5.image(img_airplane, airplane_button_pos_default[0] - 35, airplane_button_pos_default[1] - 50);
+      p5.pop();
+    } else {
+      p5.image(img_airplane, airplane_button_pos_default[0] - 35, airplane_button_pos_default[1] - 50);
+    }
+
     /* ▼アイコンの点滅 */
     if (animation_icon_scroll) {
       p5.image(img_scroll, icon_scrill_pos[0], icon_scrill_pos[1]);
@@ -992,11 +1051,17 @@ new P5((p5) => {
         p5.image(img_effect_note, effect_note_pos_table[1][animation_note_index][0], effect_note_pos_table[1][animation_note_index][1]);
         p5.image(img_effect_note, effect_note_pos_table[2][animation_note_index][0], effect_note_pos_table[2][animation_note_index][1]);
       }
+      /* 飛行機エフェクト */
+      if (effect_airplane == 1) {
+        img_airplane2.resize(200, 0);
+        p5.image(img_airplane2, airplane_pos_table[animation_airplane_index][0], airplane_pos_table[animation_airplane_index][1]);
+      }
       /* キラキラエフェクト(サビで自動出現) */
       if (player.findChorus(player.timer.position)) {
         img_star.resize(200, 0);
         p5.image(img_star, effect_star_pos_table[0][animation_note_index][0], effect_star_pos_table[0][animation_note_index][1]);
         p5.image(img_star, effect_star_pos_table[1][animation_note_index][0], effect_star_pos_table[1][animation_note_index][1]);
+        p5.image(img_star, effect_star_pos_table[2][animation_note_index][0], effect_star_pos_table[2][animation_note_index][1]);
       }
     }
 
@@ -1108,6 +1173,7 @@ new P5((p5) => {
     animation_pose_index = (animation_pose_index + 1) % 2;
     animation_offset_index = (animation_offset_index + 1) % 4;
     animation_note_index = (animation_note_index + 1) % 2;
+    animation_airplane_index = (animation_airplane_index + 1) % 4;
   };
 
 /**
@@ -1161,6 +1227,12 @@ new P5((p5) => {
     note_button.style.height = (note_button_size_default[1] * general_magnification) + 'px';
     note_button.style.left = (note_button_pos_default[0] * general_magnification) + 'px';
     note_button.style.top = (note_button_pos_default[1] * general_magnification) + 'px';
+
+    airplane_button = document.getElementById("airplane");
+    airplane_button.style.width = (airplane_button_size_default[0] * general_magnification) + 'px';
+    airplane_button.style.height = (airplane_button_size_default[1] * general_magnification) + 'px';
+    airplane_button.style.left = (airplane_button_pos_default[0] * general_magnification) + 'px';
+    airplane_button.style.top = (airplane_button_pos_default[1] * general_magnification) + 'px';
 
     character_button = document.getElementById("character");
     character_button.style.width = (character_button_size_default[0] * general_magnification) + 'px';
@@ -1217,6 +1289,7 @@ const SetSceneSongSelect = () => {
   document.getElementById('startstop').style.display = "none";
   document.getElementById('back').style.display = "none";
   document.getElementById('note').style.display = "none";
+  document.getElementById('airplane').style.display = "none";
   document.getElementById('character').style.display = "none";
   document.getElementById('p5js').style.display = "flex";
 }
@@ -1232,6 +1305,7 @@ const SetScenePlayer = () => {
   document.getElementById('startstop').style.display = "block";
   document.getElementById('back').style.display = "block";
   document.getElementById('note').style.display = "block";
+  document.getElementById('airplane').style.display = "block";
   document.getElementById('character').style.display = "block";
   document.getElementById('p5js').style.display = "flex";
 }
