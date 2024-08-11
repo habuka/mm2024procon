@@ -48,6 +48,9 @@
 - 画面をクリックすることで演出の切り替えやキャラクターの反応などを楽しむことができます。
 - 楽曲のサビを検出して特別な演出が表示されるようにしています。
 
+## アプリケーション
+- http://hbkmuseum.starfree.jp/mmprocom2024_pos/docs/index.html
+
 ## 紹介動画
 - https://youtu.be/QaTZDjgD0Wk
 
